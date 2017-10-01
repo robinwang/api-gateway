@@ -1,48 +1,29 @@
 package edu.cmu.mis.iccfb.model;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
-
-@Entity
-@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@jsonid")
 public class Quote {
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-
 
     private String text;
 
     private String source;
-    
-    
-    @ManyToOne(fetch=FetchType.EAGER)
-    @JoinColumn(name="authorId")
-    //@JsonManagedReference
 
-    private Author author;
+    private String authorName;
+
+    private Long authorId;
     
 
     public Quote() {}
 
-    public Quote(String text, String source, Author author) {
+    public Quote(String text, String source, Long authorId) {
         this.text = text;
         this.source = source;
-        this.author = author;
+        this.authorId = authorId;
     }
-
+    
     @Override
     public String toString() {
-        return String.format("Quote[id=%d, text='%s', by='%s']", this.id, this.text, this.author.getName());
+    	return String.format("Quote[id=%d,text='%s',by='%s',source='%s']",this.id,this.text,this.authorName, this.source);
     }
 
     public String getText() {
@@ -61,17 +42,23 @@ public class Quote {
         this.source = source;
     }
 
-    public Author getAuthor() {
-        return author;
+    public Long getAuthorId() {
+        return authorId;
     }
 
-    public void setAuthor(Author author) {
-        this.author = author;
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
     }
 
     public Long getId() {
         return id;
     }
     
+    public String getAuthorName() {
+    	return this.authorName;
+    }
     
+    public void setAuthorName(String authorName) {
+    	this.authorName = authorName;
+    }
 }
