@@ -31,8 +31,8 @@ public class QuoteController {
     	String randomUrl = "http://localhost:34128/random/quote";
         Quote randomQuote = restTemplate.getForObject(randomUrl, Quote.class);
         String authorUrl = "http://localhost:34127/authorId";
-        String authorName = restTemplate.getForObject(authorUrl+"?authorId="+randomQuote.getAuthorId(), String.class);
-        randomQuote.setAuthorName(authorName);
+        Author author = restTemplate.getForObject(authorUrl+"?authorId="+randomQuote.getAuthorId(), Author.class);
+        randomQuote.setAuthor(author);
         return randomQuote;
     }
     
@@ -43,47 +43,44 @@ public class QuoteController {
     	ParameterizedTypeReference<List<Quote>> responseType = new ParameterizedTypeReference<List<Quote>>(){};
         ResponseEntity<List<Quote>> quotes = restTemplate.exchange(quoteUrl+"?authorId="+authorId, HttpMethod.GET, null, responseType);
         String authorUrl = "http://localhost:34127/authorId";
-        String authorName = restTemplate.getForObject(authorUrl+"?authorId="+authorId, String.class);
-        Author a = new Author(authorName, authorId);
-        System.out.println(authorName);
-        System.out.println(quotes.getStatusCodeValue());
-        //System.out.println(quotes.getHeaders().get);
-        a.setQuotes(quotes.getBody());
-        return a;
+        Author author = restTemplate.getForObject(authorUrl+"?authorId="+authorId, Author.class);
+        author.setQuotes(quotes.getBody());
+        return author;
     }
     
     @RequestMapping(value = "/api/quote", method = RequestMethod.POST)
     public void saveQuote(@RequestBody Quote quote) {
-    	System.out.println(quote.toString());
+    	//System.out.println(quote.getAuthorName());
+    	//quote.setAuthorName(quote.getAuthor().getName());
     	RestTemplate restTemplate = new RestTemplate();
         String authorUrl = "http://localhost:34127/authorName";
         //long authorId = restTemplate.getForObject(authorUrl+"?authorName="+quote.getAuthorName(), long.class);
-        ResponseEntity<Long> response = restTemplate.exchange(authorUrl+"?authorName="+quote.getAuthorName(), HttpMethod.GET, null, Long.class);
-    	int statusCode = response.getStatusCodeValue();
-    	if (statusCode == 200) {
-    		long authorId = response.getBody();
+        ResponseEntity<Author> response = restTemplate.exchange(authorUrl+"?authorName="+quote.getAuthor().getName(), HttpMethod.GET, null, Author.class);
+//    	int statusCode = response.getStatusCodeValue();
+//    	System.out.println("#########"+statusCode);
+        Author a = response.getBody();
+    	if (a != null) {
+    		//long authorId = response.getBody();
     		HttpEntity<Quote> quoteRequest = new HttpEntity<>(
     				new Quote(quote.getText(), 
     						  quote.getSource(),
-    						  authorId));
+    						  a.getId()));
         	String quoteUrl = "http://localhost:34128/quote";
         	ResponseEntity<Quote> qresponse = restTemplate.exchange(quoteUrl, HttpMethod.POST, quoteRequest, Quote.class);	    		    		
     	} else {
-            HttpEntity<Author> authorRequest = new HttpEntity<>(new Author(quote.getAuthorName(), Integer.valueOf(quote.getAuthorName())));
+            HttpEntity<Author> authorRequest = new HttpEntity<>(new Author(quote.getAuthor().getName(), Long.valueOf(quote.getAuthor().getName())));
     	    authorUrl = "http://localhost:34127/author";
     	    ResponseEntity<Author> resp = restTemplate.exchange(authorUrl, HttpMethod.POST, authorRequest, Author.class);
-    	    statusCode = response.getStatusCodeValue();
+    	    int statusCode = response.getStatusCodeValue();
     	    if (statusCode == 200) {
     		    HttpEntity<Quote> quoteRequest = new HttpEntity<>(
     				new Quote(quote.getText(), 
     						  quote.getSource(),
-    						  quote.getAuthorId()));
+    						  Long.valueOf(quote.getAuthor().getName())));
         	String quoteUrl = "http://localhost:34128/quote";
         	ResponseEntity<Quote> qresponse = restTemplate.exchange(quoteUrl, HttpMethod.POST, quoteRequest, Quote.class);	    		
     	}
     	}
-
-        System.out.println("Saving quote");
     }
 
 }

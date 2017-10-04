@@ -12,6 +12,8 @@ public class Quote {
 
     private Long authorId;
     
+    private Author a;
+    
 
     public Quote() {}
 
@@ -23,7 +25,7 @@ public class Quote {
     
     @Override
     public String toString() {
-    	return String.format("Quote[id=%d,text='%s',by='%s',source='%s']",this.id,this.text,this.authorName, this.source);
+    	return String.format("Quote[id=%d,text='%s',by='%s',id=,source='%s']",this.id,this.text,this.authorName, this.source);
     }
 
     public String getText() {
@@ -60,5 +62,13 @@ public class Quote {
     
     public void setAuthorName(String authorName) {
     	this.authorName = authorName;
+    }
+    
+    public Author getAuthor() {
+    	return this.a;
+    }
+    
+    public void setAuthor(Author a) {
+    	this.a = a;
     }
 }

@@ -9,7 +9,6 @@ angular.module('app.controllers', [])
 		});
 })
 .controller('SaveQuoteCtrl', function($scope, $state, QuoteService) {
-    
     $scope.saveQuote = function() {
         QuoteService.save(
             $scope.quote,
