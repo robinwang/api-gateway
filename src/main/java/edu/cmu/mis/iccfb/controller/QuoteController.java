@@ -52,10 +52,11 @@ public class QuoteController {
     public void saveQuote(@RequestBody Quote quote) {
     	//System.out.println(quote.getAuthorName());
     	//quote.setAuthorName(quote.getAuthor().getName());
+    	String authorName = quote.getAuthor().getName();
     	RestTemplate restTemplate = new RestTemplate();
         String authorUrl = "http://localhost:34127/authorName";
         //long authorId = restTemplate.getForObject(authorUrl+"?authorName="+quote.getAuthorName(), long.class);
-        ResponseEntity<Author> response = restTemplate.exchange(authorUrl+"?authorName="+quote.getAuthor().getName(), HttpMethod.GET, null, Author.class);
+        ResponseEntity<Author> response = restTemplate.exchange(authorUrl+"?authorName="+authorName, HttpMethod.GET, null, Author.class);
 //    	int statusCode = response.getStatusCodeValue();
 //    	System.out.println("#########"+statusCode);
         Author a = response.getBody();
@@ -68,15 +69,17 @@ public class QuoteController {
         	String quoteUrl = "http://localhost:34128/quote";
         	ResponseEntity<Quote> qresponse = restTemplate.exchange(quoteUrl, HttpMethod.POST, quoteRequest, Quote.class);	    		    		
     	} else {
-            HttpEntity<Author> authorRequest = new HttpEntity<>(new Author(quote.getAuthor().getName(), Long.valueOf(quote.getAuthor().getName())));
+            HttpEntity<Author> authorRequest = new HttpEntity<>(new Author(authorName, 0L));
+            System.out.println(authorName);
     	    authorUrl = "http://localhost:34127/author";
-    	    ResponseEntity<Author> resp = restTemplate.exchange(authorUrl, HttpMethod.POST, authorRequest, Author.class);
-    	    int statusCode = response.getStatusCodeValue();
+    	    ResponseEntity<Long> resp = restTemplate.exchange(authorUrl, HttpMethod.POST, authorRequest, Long.class);
+    	    int statusCode = resp.getStatusCodeValue();
+    	    Long newAuhorId = resp.getBody();
     	    if (statusCode == 200) {
     		    HttpEntity<Quote> quoteRequest = new HttpEntity<>(
     				new Quote(quote.getText(), 
     						  quote.getSource(),
-    						  Long.valueOf(quote.getAuthor().getName())));
+    						  newAuhorId));
         	String quoteUrl = "http://localhost:34128/quote";
         	ResponseEntity<Quote> qresponse = restTemplate.exchange(quoteUrl, HttpMethod.POST, quoteRequest, Quote.class);	    		
     	}
