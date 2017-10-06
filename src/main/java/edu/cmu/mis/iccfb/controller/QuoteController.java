@@ -50,5 +50,4 @@ public class QuoteController {
     	    quoteservice.writeQuote(quote, a);
     	}
     }
-
 }

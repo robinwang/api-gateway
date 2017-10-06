@@ -2,6 +2,7 @@ package edu.cmu.mis.iccfb.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -14,18 +15,20 @@ import edu.cmu.mis.iccfb.model.Quote;
 
 @Service
 public class QuoteService {
-	
+	@Value("${QUOTE_SERVICE_URL}")
+	private String quoteUrl;
+	private String reqUrl;
 	RestTemplate restTemplate = new RestTemplate();
 	
 	public Quote getRandomQuote() {
-    	String randomUrl = "http://localhost:34128/random/quote";
-        Quote randomQuote = restTemplate.getForObject(randomUrl, Quote.class);
+		reqUrl = quoteUrl+"random/quote";
+        Quote randomQuote = restTemplate.getForObject(reqUrl, Quote.class);
         return randomQuote;
 	}
 	public List<Quote> getQuotes(Long authorId) {
-    	String quoteUrl = "http://localhost:34128/quote";
+		reqUrl = quoteUrl+"quote";
     	ParameterizedTypeReference<List<Quote>> responseType = new ParameterizedTypeReference<List<Quote>>(){};
-        ResponseEntity<List<Quote>> resp = restTemplate.exchange(quoteUrl+"?authorId="+authorId, HttpMethod.GET, null, responseType);
+        ResponseEntity<List<Quote>> resp = restTemplate.exchange(reqUrl+"?authorId="+authorId, HttpMethod.GET, null, responseType);
         return resp.getBody();
 	}
 	public void writeQuote(Quote quote, Author author) {
@@ -33,7 +36,7 @@ public class QuoteService {
 				new Quote(quote.getText(), 
 						  quote.getSource(),
 						  author.getId()));
-    	String quoteUrl = "http://localhost:34128/quote";
-    	ResponseEntity<Quote> resp = restTemplate.exchange(quoteUrl, HttpMethod.POST, quoteRequest, Quote.class);	    		    		
+		reqUrl = quoteUrl+"quote";
+    	ResponseEntity<Quote> resp = restTemplate.exchange(reqUrl, HttpMethod.POST, quoteRequest, Quote.class);	    		    		
 	}
 }
