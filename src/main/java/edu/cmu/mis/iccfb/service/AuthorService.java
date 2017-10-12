@@ -11,8 +11,9 @@ import edu.cmu.mis.iccfb.model.Author;
 
 @Service
 public class AuthorService {
-	  @Value("${AUTHOR_SERVICE_URL}")
-	  private String authorUrl;
+	  //@Value("${AUTHOR_SERVICE_URL}")
+	  //private String authorUrl;
+	  private String authorUrl = "http://author-service/";
 	  private String reqUrl;
 	  RestTemplate restTemplate = new RestTemplate();
       public Author getAuthorById(Long authorId) {

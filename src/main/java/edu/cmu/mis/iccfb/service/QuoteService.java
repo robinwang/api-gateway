@@ -2,7 +2,9 @@ package edu.cmu.mis.iccfb.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -15,10 +17,13 @@ import edu.cmu.mis.iccfb.model.Quote;
 
 @Service
 public class QuoteService {
-	@Value("${QUOTE_SERVICE_URL}")
-	private String quoteUrl;
+	//@Value("${QUOTE_SERVICE_URL}")
+	//private String quoteUrl;
+	private String quoteUrl = "http://quote-service/";
 	private String reqUrl;
-	RestTemplate restTemplate = new RestTemplate();
+	@Autowired
+    @LoadBalanced
+	RestTemplate restTemplate;
 	
 	public Quote getRandomQuote() {
 		reqUrl = quoteUrl+"random/quote";
