@@ -19,11 +19,11 @@ import edu.cmu.mis.iccfb.model.Quote;
 public class QuoteService {
 	//@Value("${QUOTE_SERVICE_URL}")
 	//private String quoteUrl;
-	private String quoteUrl = "http://quote-service/";
 	private String reqUrl;
 	@Autowired
     @LoadBalanced
-	RestTemplate restTemplate;
+	private RestTemplate restTemplate;
+	private String quoteUrl = "http://quote-service/";	
 	
 	public Quote getRandomQuote() {
 		reqUrl = quoteUrl+"random/quote";
@@ -44,4 +44,5 @@ public class QuoteService {
 		reqUrl = quoteUrl+"quote";
     	ResponseEntity<Quote> resp = restTemplate.exchange(reqUrl, HttpMethod.POST, quoteRequest, Quote.class);	    		    		
 	}
+	
 }

@@ -1,6 +1,7 @@
 package edu.cmu.mis.iccfb.service;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,10 @@ public class AuthorService {
 	  //private String authorUrl;
 	  private String authorUrl = "http://author-service/";
 	  private String reqUrl;
-	  RestTemplate restTemplate = new RestTemplate();
+	  @Autowired
+	  @LoadBalanced
+	  RestTemplate restTemplate;
+	  
       public Author getAuthorById(Long authorId) {
     	  reqUrl = authorUrl+"authorId";
           Author author = restTemplate.getForObject(reqUrl+"?authorId="+authorId, Author.class);

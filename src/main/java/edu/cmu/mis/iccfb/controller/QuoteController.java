@@ -1,6 +1,7 @@
 package edu.cmu.mis.iccfb.controller;
 
 import java.util.List;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,7 @@ public class QuoteController {
 	@Autowired
 	QuoteService quoteservice;
 	
+	@HystrixCommand(fallbackMethod = "requestFailFallBack")
     @RequestMapping("/api/quote/random")
     public Quote random() {
     	Quote randomQuote = quoteservice.getRandomQuote();
@@ -50,4 +52,10 @@ public class QuoteController {
     	    quoteservice.writeQuote(quote, a);
     	}
     }
+    
+	public Quote requestFailFallBack() {
+		Quote err = new Quote("Service not available now!", null, -1L);
+		err.setAuthor(new Author("System Admin",-1L));
+		return err;
+	  }
 }
